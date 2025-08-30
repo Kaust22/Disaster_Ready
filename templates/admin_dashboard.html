@@ -1,0 +1,435 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Disaster Preparedness Education{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-dark text-white border-0">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h1 class="h3 mb-2">
+                                <i data-feather="bar-chart-2" class="me-2"></i>Admin Dashboard
+                            </h1>
+                            <p class="mb-0">Monitor student progress and platform usage</p>
+                            <small class="text-muted">Welcome, {{ user.first_name|default:user.username }} ({{ user.userprofile.get_user_type_display }})</small>
+                        </div>
+                        <div class="col-lg-4 text-lg-end">
+                            <i data-feather="users" style="width: 64px; height: 64px;" class="opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Key Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="stat-icon mb-3">
+                        <i data-feather="users" style="width: 48px; height: 48px;" class="text-primary"></i>
+                    </div>
+                    <h3 class="h2 text-primary mb-1">{{ total_users }}</h3>
+                    <p class="text-muted mb-0">Total Users</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="stat-icon mb-3">
+                        <i data-feather="book" style="width: 48px; height: 48px;" class="text-success"></i>
+                    </div>
+                    <h3 class="h2 text-success mb-1">{{ student_count }}</h3>
+                    <p class="text-muted mb-0">Students</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="stat-icon mb-3">
+                        <i data-feather="user-check" style="width: 48px; height: 48px;" class="text-warning"></i>
+                    </div>
+                    <h3 class="h2 text-warning mb-1">{{ teacher_count }}</h3>
+                    <p class="text-muted mb-0">Teachers</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="stat-icon mb-3">
+                        <i data-feather="trending-up" style="width: 48px; height: 48px;" class="text-info"></i>
+                    </div>
+                    <h3 class="h2 text-info mb-1">
+                        {% with avg_progress=disaster_progress|length %}
+                            {% if avg_progress > 0 %}
+                                {{ avg_progress }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        {% endwith %}
+                    </h3>
+                    <p class="text-muted mb-0">Disaster Types</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Progress by Disaster Type -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h4 class="mb-0">
+                        <i data-feather="target" class="me-2"></i>Progress by Disaster Type
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% for progress in disaster_progress %}
+                    <div class="disaster-progress-item mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="me-3" style="font-size: 1.5rem;">{{ progress.disaster_type.icon }}</span>
+                            <div class="flex-grow-1">
+                                <h5 class="mb-0">{{ progress.disaster_type.name }}</h5>
+                                <small class="text-muted">{{ progress.disaster_type.description|truncatewords:10 }}</small>
+                            </div>
+                            <div class="text-end">
+                                <div class="badge bg-primary">{{ progress.disaster_type.modules.count }} modules</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Module Completion Rate</label>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    <div class="progress-bar bg-success" 
+                                         style="width: {{ progress.completion_rate|floatformat:1 }}%"
+                                         role="progressbar">
+                                        <small>{{ progress.completion_rate|floatformat:1 }}%</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Average Quiz Score</label>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    <div class="progress-bar bg-warning" 
+                                         style="width: {{ progress.avg_quiz_score|floatformat:1 }}%"
+                                         role="progressbar">
+                                        <small>{{ progress.avg_quiz_score|floatformat:1 }}%</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-4">
+                        <i data-feather="inbox" style="width: 48px; height: 48px;" class="opacity-50 mb-2"></i>
+                        <p class="mb-0">No disaster types found</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0">
+                        <i data-feather="activity" class="me-2 text-success"></i>Recent Module Completions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_module_completions %}
+                        <div class="list-group list-group-flush">
+                            {% for completion in recent_module_completions %}
+                            <div class="list-group-item border-0 px-0">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-3">{{ completion.module.disaster_type.icon }}</span>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ completion.module.title }}</h6>
+                                        <small class="text-muted">
+                                            by {{ completion.user.first_name|default:completion.user.username }}
+                                            • {{ completion.module.disaster_type.name }}
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted">{{ completion.completion_date|timesince }} ago</small>
+                                        {% if completion.time_spent %}
+                                            <div><small class="text-muted">{{ completion.time_spent|floatformat:0 }}s</small></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i data-feather="book" style="width: 48px; height: 48px;" class="opacity-50 mb-2"></i>
+                            <p class="mb-0">No module completions yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0">
+                        <i data-feather="award" class="me-2 text-primary"></i>Recent Quiz Attempts
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_quiz_attempts %}
+                        <div class="list-group list-group-flush">
+                            {% for attempt in recent_quiz_attempts %}
+                            <div class="list-group-item border-0 px-0">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-3">{{ attempt.quiz.disaster_type.icon }}</span>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ attempt.quiz.title }}</h6>
+                                        <small class="text-muted">
+                                            by {{ attempt.user.first_name|default:attempt.user.username }}
+                                            • {{ attempt.correct_answers }}/{{ attempt.total_questions }} correct
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="badge {% if attempt.score >= 80 %}bg-success{% elif attempt.score >= 60 %}bg-warning{% else %}bg-danger{% endif %} mb-1">
+                                            {{ attempt.score|floatformat:0 }}%
+                                        </div>
+                                        <div><small class="text-muted">{{ attempt.completed_at|timesince }} ago</small></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i data-feather="help-circle" style="width: 48px; height: 48px;" class="opacity-50 mb-2"></i>
+                            <p class="mb-0">No quiz attempts yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0">
+                        <i data-feather="zap" class="me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <a href="/admin/main/userprofile/" class="btn btn-outline-primary w-100 h-100 d-flex align-items-center justify-content-center">
+                                <div class="text-center">
+                                    <i data-feather="users" class="mb-2"></i>
+                                    <div>Manage Users</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <a href="/admin/main/educationmodule/" class="btn btn-outline-success w-100 h-100 d-flex align-items-center justify-content-center">
+                                <div class="text-center">
+                                    <i data-feather="book-open" class="mb-2"></i>
+                                    <div>Manage Modules</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <a href="/admin/main/quiz/" class="btn btn-outline-warning w-100 h-100 d-flex align-items-center justify-content-center">
+                                <div class="text-center">
+                                    <i data-feather="help-circle" class="mb-2"></i>
+                                    <div>Manage Quizzes</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <a href="/admin/main/emergencycontact/" class="btn btn-outline-danger w-100 h-100 d-flex align-items-center justify-content-center">
+                                <div class="text-center">
+                                    <i data-feather="phone" class="mb-2"></i>
+                                    <div>Emergency Contacts</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Performance Insights -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0">
+                        <i data-feather="trending-up" class="me-2"></i>Performance Insights
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="insight-card text-center p-3 border rounded">
+                                <i data-feather="users" class="text-primary mb-2" style="width: 32px; height: 32px;"></i>
+                                <h6>User Engagement</h6>
+                                <p class="text-muted small mb-0">
+                                    {% if total_users > 0 %}
+                                        {{ student_count|mul:100|div:total_users|floatformat:0 }}% are students
+                                    {% else %}
+                                        No users registered yet
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="insight-card text-center p-3 border rounded">
+                                <i data-feather="target" class="text-success mb-2" style="width: 32px; height: 32px;"></i>
+                                <h6>Average Performance</h6>
+                                <p class="text-muted small mb-0">
+                                    {% with total_avg=disaster_progress|length %}
+                                        {% if total_avg > 0 %}
+                                            Monitor individual disaster type progress
+                                        {% else %}
+                                            No progress data available
+                                        {% endif %}
+                                    {% endwith %}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="insight-card text-center p-3 border rounded">
+                                <i data-feather="clock" class="text-warning mb-2" style="width: 32px; height: 32px;"></i>
+                                <h6>Recent Activity</h6>
+                                <p class="text-muted small mb-0">
+                                    {% if recent_module_completions or recent_quiz_attempts %}
+                                        Active learning community
+                                    {% else %}
+                                        Encourage more participation
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .disaster-progress-item {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-bottom: 1rem;
+    }
+    
+    .disaster-progress-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    
+    .progress {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        transition: width 0.6s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .insight-card {
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .insight-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .btn {
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .list-group-item {
+        transition: background-color 0.2s ease;
+    }
+    
+    .list-group-item:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate progress bars
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.width = width;
+        }, 500);
+    });
+    
+    // Add tooltips to insight cards
+    const insightCards = document.querySelectorAll('.insight-card');
+    insightCards.forEach(card => {
+        card.setAttribute('data-bs-toggle', 'tooltip');
+        card.setAttribute('title', 'Click for detailed view');
+    });
+    
+    // Initialize tooltips if Bootstrap is available
+    if (typeof bootstrap !== 'undefined') {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+});
+</script>
+{% endblock %}

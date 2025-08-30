@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ module.title }} - Disaster Preparedness Education{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Navigation breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item">{{ module.disaster_type.name }}</li>
+            <li class="breadcrumb-item active" aria-current="page">{{ module.title }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex align-items-center">
+                        <span class="me-3" style="font-size: 1.5rem;">{{ module.disaster_type.icon }}</span>
+                        <div>
+                            <h1 class="h4 mb-0">{{ module.title }}</h1>
+                            <small class="opacity-75">{{ module.disaster_type.name }} • Module {{ module.order }}</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Reading Progress -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">
+                                <i data-feather="clock" class="me-1"></i>
+                                Estimated reading time: {{ module.estimated_read_time }} minutes
+                            </small>
+                            {% if progress.completed %}
+                                <span class="badge bg-success">
+                                    <i data-feather="check" class="me-1"></i>Completed
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning">
+                                    <i data-feather="book-open" class="me-1"></i>In Progress
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-primary" id="readingProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Module Content -->
+                    <div class="module-content" id="moduleContent">
+                        {{ module.content|safe }}
+                    </div>
+                    
+                    <!-- Completion Actions -->
+                    <div class="mt-5 pt-4 border-top">
+                        {% if not progress.completed %}
+                            <form method="post" action="{% url 'complete_module' module.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="time_spent" id="timeSpent" value="0">
+                                <button type="submit" class="btn btn-success btn-lg" id="completeBtn">
+                                    <i data-feather="check-circle" class="me-2"></i>Mark as Complete
+                                </button>
+                            </form>
+                        {% endif %}
+                        
+                        <div class="d-flex gap-2 mt-3">
+                            {% if quiz %}
+                                <a href="{% url 'quiz_detail' quiz.id %}" class="btn btn-outline-primary">
+                                    <i data-feather="help-circle" class="me-1"></i>Take Quiz
+                                </a>
+                            {% endif %}
+                            
+                            {% if module.disaster_type.drill_checklists.exists %}
+                                <a href="{% url 'drill_checklist' module.disaster_type.drill_checklists.first.id %}" class="btn btn-outline-warning">
+                                    <i data-feather="check-square" class="me-1"></i>Practice Drill
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Related Modules -->
+            {% if related_modules %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i data-feather="list" class="me-2"></i>Other {{ module.disaster_type.name }} Modules
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for related_module in related_modules %}
+                        <a href="{% url 'module_detail' related_module.id %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <div class="me-3">
+                                {% if related_module.moduleprogress_set.filter:user=request.user.completed %}
+                                    <i data-feather="check-circle" class="text-success"></i>
+                                {% else %}
+                                    <i data-feather="circle" class="text-muted"></i>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ related_module.title }}</h6>
+                                <small class="text-muted">Module {{ related_module.order }} • {{ related_module.estimated_read_time }} min</small>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i data-feather="zap" class="me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'emergency_contacts' %}" class="btn btn-outline-danger btn-sm">
+                            <i data-feather="phone" class="me-1"></i>Emergency Contacts
+                        </a>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm">
+                            <i data-feather="arrow-left" class="me-1"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Points Summary -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i data-feather="bookmark" class="me-2"></i>Remember
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-0">
+                        <small>
+                            <strong>{{ module.disaster_type.name }} Safety:</strong><br>
+                            {% if module.disaster_type.name == 'Earthquake' %}
+                                Drop, Cover, and Hold On during shaking.
+                            {% elif module.disaster_type.name == 'Flood' %}
+                                Turn Around, Don't Drown - never walk or drive through flood water.
+                            {% elif module.disaster_type.name == 'Fire' %}
+                                Get low and go - stay below smoke when evacuating.
+                            {% else %}
+                                Follow emergency procedures and stay informed.
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let startTime = Date.now();
+    let progressBar = document.getElementById('readingProgress');
+    let timeSpentInput = document.getElementById('timeSpent');
+    
+    // Simulate reading progress based on scroll
+    function updateProgress() {
+        const content = document.getElementById('moduleContent');
+        const contentHeight = content.scrollHeight;
+        const windowHeight = window.innerHeight;
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Calculate progress based on scroll position
+        const progress = Math.min(100, (scrollTop / (contentHeight - windowHeight + 100)) * 100);
+        progressBar.style.width = progress + '%';
+        
+        // Update time spent
+        const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+        if (timeSpentInput) {
+            timeSpentInput.value = timeSpent;
+        }
+    }
+    
+    // Update progress on scroll
+    window.addEventListener('scroll', updateProgress);
+    
+    // Initial progress update
+    updateProgress();
+    
+    // Show completion button when user reaches end
+    window.addEventListener('scroll', function() {
+        const scrollPosition = window.pageYOffset + window.innerHeight;
+        const documentHeight = document.body.scrollHeight;
+        const completeBtn = document.getElementById('completeBtn');
+        
+        if (completeBtn && scrollPosition >= documentHeight - 100) {
+            completeBtn.classList.add('pulse');
+        }
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .module-content {
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+    
+    .module-content h3 {
+        color: #0d6efd;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .module-content h4 {
+        color: #6f42c1;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .module-content ul, .module-content ol {
+        margin-bottom: 1.5rem;
+    }
+    
+    .module-content li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .progress {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-radius: 0;
+    }
+</style>
+{% endblock %}

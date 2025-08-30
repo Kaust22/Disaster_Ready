@@ -1,0 +1,621 @@
+/* Disaster Preparedness Education Platform Styles */
+
+/* Base Styles */
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #0dcaf0;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    
+    --font-family-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    --border-radius: 0.375rem;
+    --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --transition: all 0.3s ease;
+}
+
+body {
+    font-family: var(--font-family-sans-serif);
+    line-height: 1.6;
+    color: var(--dark-color);
+    background-color: #f8f9fa;
+}
+
+/* Navigation Enhancements */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    transition: var(--transition);
+    border-radius: var(--border-radius);
+    margin: 0 0.25rem;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Card Enhancements */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    background-color: rgba(0, 0, 0, 0.03);
+    font-weight: 600;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #4dabf7 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+    background-size: 50px 50px;
+    opacity: 0.5;
+}
+
+.hero-icons {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+/* Feature Boxes */
+.feature-box {
+    padding: 2rem 1rem;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    height: 100%;
+}
+
+.feature-box:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.feature-box:hover .feature-icon {
+    transform: scale(1.1);
+}
+
+/* Disaster Cards */
+.disaster-card {
+    transition: var(--transition);
+    height: 100%;
+}
+
+.disaster-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+}
+
+.disaster-icon {
+    font-size: 3rem;
+    line-height: 1;
+    display: block;
+}
+
+/* Statistics */
+.stat-item {
+    padding: 1rem 0;
+}
+
+.stat-number {
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-large .stat-number {
+    font-size: 3rem;
+}
+
+/* Progress Bars */
+.progress {
+    height: 10px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.progress-bar {
+    border-radius: 5px;
+    transition: width 0.6s ease;
+}
+
+/* Buttons */
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition);
+    border: none;
+    padding: 0.75rem 1.5rem;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+/* Form Controls */
+.form-control, .form-select {
+    border: 2px solid #e9ecef;
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    transition: var(--transition);
+    font-size: 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-check-input {
+    margin-top: 0.25rem;
+    margin-right: 0.75rem;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Alerts */
+.alert {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.alert-heading {
+    font-weight: 600;
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    padding: 0.5rem 0.75rem;
+}
+
+/* List Groups */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    transition: var(--transition);
+}
+
+.list-group-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* Module Content Styling */
+.module-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #333;
+}
+
+.module-content h3 {
+    color: var(--primary-color);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+}
+
+.module-content h4 {
+    color: #6f42c1;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.module-content ul, .module-content ol {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+}
+
+.module-content li {
+    margin-bottom: 0.5rem;
+}
+
+.module-content strong {
+    color: var(--dark-color);
+    font-weight: 600;
+}
+
+/* Quiz Styling */
+.question-card {
+    margin-bottom: 1.5rem;
+    transition: var(--transition);
+}
+
+.question-card:hover {
+    transform: translateY(-2px);
+}
+
+.form-check-label {
+    cursor: pointer;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.form-check-label:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.form-check-input:checked + .form-check-label {
+    background-color: rgba(13, 110, 253, 0.2);
+    font-weight: 600;
+    border: 2px solid var(--primary-color);
+}
+
+/* Drill Styling */
+.step-card {
+    transition: var(--transition);
+    margin-bottom: 1rem;
+}
+
+.step-card.completed {
+    opacity: 0.8;
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.step-card.completed .card {
+    border-color: var(--success-color) !important;
+}
+
+.step-label {
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.step-text {
+    font-size: 1.05rem;
+    line-height: 1.5;
+    margin-top: 0.5rem;
+}
+
+.form-check-input:checked + .step-label {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+/* Emergency Contacts */
+.emergency-number {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+}
+
+.emergency-number:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.contact-item {
+    transition: var(--transition);
+    border-radius: var(--border-radius);
+}
+
+.contact-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.contact-icon .rounded-circle {
+    transition: var(--transition);
+}
+
+.contact-item:hover .contact-icon .rounded-circle {
+    transform: scale(1.1);
+}
+
+.phone-number {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-weight: 600;
+    color: var(--success-color);
+    font-size: 1.1rem;
+}
+
+/* Admin Dashboard */
+.stat-icon {
+    transition: var(--transition);
+}
+
+.card:hover .stat-icon {
+    transform: scale(1.1);
+}
+
+.disaster-progress-item {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.disaster-progress-item:last-child {
+    border-bottom: none;
+}
+
+.insight-card {
+    transition: var(--transition);
+    border-radius: var(--border-radius);
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+}
+
+.insight-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Animations */
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Time Limit Animation */
+@keyframes timeLimit {
+    0% { background-color: rgba(255, 193, 7, 0.3); }
+    100% { background-color: transparent; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section {
+        text-align: center;
+    }
+    
+    .hero-icons {
+        margin-top: 2rem;
+    }
+    
+    .stat-large .stat-number {
+        font-size: 2.5rem;
+    }
+    
+    .feature-box {
+        margin-bottom: 1rem;
+    }
+    
+    .contact-item {
+        border-end: none !important;
+    }
+    
+    .emergency-number {
+        margin-bottom: 1rem;
+    }
+    
+    .disaster-card {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .hero-section .display-4 {
+        font-size: 2rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .module-content {
+        font-size: 1rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .btn, .navbar, footer, .toast-container {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+    }
+    
+    .contact-item {
+        border: 1px solid #ccc !important;
+    }
+    
+    .phone-number {
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+    
+    .hero-section {
+        background: #fff !important;
+        color: #000 !important;
+    }
+    
+    .text-white {
+        color: #000 !important;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Focus Styles for Accessibility */
+.btn:focus,
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .card {
+        border: 2px solid #000;
+    }
+    
+    .btn {
+        border: 2px solid currentColor;
+    }
+    
+    .progress {
+        border: 1px solid #000;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bs-body-bg: #121212;
+        --bs-body-color: #ffffff;
+    }
+    
+    body {
+        background-color: #121212;
+        color: #ffffff;
+    }
+    
+    .card {
+        background-color: #1e1e1e;
+        border-color: #333;
+    }
+    
+    .card-header {
+        background-color: #2a2a2a;
+        border-color: #333;
+    }
+    
+    .list-group-item {
+        background-color: #1e1e1e;
+        border-color: #333;
+        color: #ffffff;
+    }
+    
+    .form-control,
+    .form-select {
+        background-color: #2a2a2a;
+        border-color: #444;
+        color: #ffffff;
+    }
+    
+    .text-muted {
+        color: #aaa !important;
+    }
+}

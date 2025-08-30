@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Disaster Preparedness Education{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h2 class="mb-0">
+                        <i data-feather="log-in" class="me-2"></i>
+                        Welcome Back
+                    </h2>
+                    <p class="mb-0 mt-2">Sign in to continue your disaster preparedness learning</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    {% if form.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i data-feather="alert-circle" class="me-2"></i>
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                                <i data-feather="user" class="me-1"></i>Username
+                            </label>
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="{{ form.username.id_for_label }}" 
+                                   name="{{ form.username.name }}" 
+                                   value="{{ form.username.value|default:'' }}"
+                                   placeholder="Enter your username" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">
+                                <i data-feather="lock" class="me-1"></i>Password
+                            </label>
+                            <input type="password" class="form-control form-control-lg" 
+                                   id="{{ form.password.id_for_label }}" 
+                                   name="{{ form.password.name }}"
+                                   placeholder="Enter your password" required>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i data-feather="log-in" class="me-2"></i>Sign In
+                            </button>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <p class="mb-0">Don't have an account? 
+                                <a href="{% url 'register' %}" class="text-decoration-none fw-bold">Register here</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Demo Accounts Info -->
+            <div class="card mt-4 border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">
+                        <i data-feather="info" class="me-2"></i>Demo Account
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Admin Access:</strong></p>
+                    <p class="small mb-0">Username: <code>admin</code> | Password: <code>admin123</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-control-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1.1rem;
+    }
+    
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .card {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}

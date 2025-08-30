@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Disaster Preparedness Education{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h2 class="mb-0">
+                        <i data-feather="user-plus" class="me-2"></i>
+                        Create Your Account
+                    </h2>
+                    <p class="mb-0 mt-2">Join the disaster preparedness education platform</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="post" id="registrationForm">
+                        {% csrf_token %}
+                        
+                        <!-- Username -->
+                        <div class="mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                                <i data-feather="user" class="me-1"></i>Username
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.username.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">{{ form.username.help_text }}</div>
+                        </div>
+                        
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="{{ form.password1.id_for_label }}" class="form-label">
+                                <i data-feather="lock" class="me-1"></i>Password
+                            </label>
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.password1.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">{{ form.password1.help_text }}</div>
+                        </div>
+                        
+                        <!-- Confirm Password -->
+                        <div class="mb-3">
+                            <label for="{{ form.password2.id_for_label }}" class="form-label">
+                                <i data-feather="lock" class="me-1"></i>Confirm Password
+                            </label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.password2.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">{{ form.password2.help_text }}</div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <!-- User Type -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i data-feather="users" class="me-1"></i>I am a:
+                            </label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="user_type" value="student" id="userTypeStudent" checked>
+                                        <label class="form-check-label" for="userTypeStudent">
+                                            <i data-feather="book" class="me-1"></i>Student
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="user_type" value="teacher" id="userTypeTeacher">
+                                        <label class="form-check-label" for="userTypeTeacher">
+                                            <i data-feather="user" class="me-1"></i>Teacher
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="user_type" value="admin" id="userTypeAdmin">
+                                        <label class="form-check-label" for="userTypeAdmin">
+                                            <i data-feather="settings" class="me-1"></i>Admin
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Institution -->
+                        <div class="mb-3">
+                            <label for="institution" class="form-label">
+                                <i data-feather="home" class="me-1"></i>Institution/School Name
+                            </label>
+                            <input type="text" class="form-control" id="institution" name="institution" placeholder="Enter your school or institution name">
+                        </div>
+                        
+                        <!-- Grade Level (for students) -->
+                        <div class="mb-3" id="gradeLevelSection">
+                            <label for="grade_level" class="form-label">
+                                <i data-feather="award" class="me-1"></i>Grade/Class Level
+                            </label>
+                            <select class="form-select" id="grade_level" name="grade_level">
+                                <option value="">Select your grade level</option>
+                                <option value="K-5">K-5 (Primary School)</option>
+                                <option value="6-8">6-8 (Middle School)</option>
+                                <option value="9-10">9-10 (High School)</option>
+                                <option value="11-12">11-12 (Senior Secondary)</option>
+                                <option value="undergraduate">Undergraduate</option>
+                                <option value="postgraduate">Postgraduate</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i data-feather="user-plus" class="me-2"></i>Create Account
+                            </button>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <p class="mb-0">Already have an account? 
+                                <a href="{% url 'login' %}" class="text-decoration-none">Login here</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show/hide grade level based on user type
+    document.addEventListener('DOMContentLoaded', function() {
+        const userTypeInputs = document.querySelectorAll('input[name="user_type"]');
+        const gradeLevelSection = document.getElementById('gradeLevelSection');
+        
+        function toggleGradeLevel() {
+            const selectedType = document.querySelector('input[name="user_type"]:checked').value;
+            if (selectedType === 'student') {
+                gradeLevelSection.style.display = 'block';
+            } else {
+                gradeLevelSection.style.display = 'none';
+                document.getElementById('grade_level').value = '';
+            }
+        }
+        
+        userTypeInputs.forEach(input => {
+            input.addEventListener('change', toggleGradeLevel);
+        });
+        
+        // Initialize on page load
+        toggleGradeLevel();
+    });
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-control, .form-select {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .card {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}

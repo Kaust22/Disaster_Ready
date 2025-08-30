@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ quiz.title }} - Disaster Preparedness Education{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Navigation breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item">{{ quiz.disaster_type.name }}</li>
+            <li class="breadcrumb-item active" aria-current="page">{{ quiz.title }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <!-- Quiz Content -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <span class="me-3" style="font-size: 1.5rem;">{{ quiz.disaster_type.icon }}</span>
+                            <div>
+                                <h1 class="h4 mb-0">{{ quiz.title }}</h1>
+                                <small class="opacity-75">{{ quiz.disaster_type.name }} Knowledge Assessment</small>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="h5 mb-0" id="timeDisplay">00:00</div>
+                            <small class="opacity-75">Time Elapsed</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    {% if quiz.description %}
+                        <div class="alert alert-info mb-4">
+                            <i data-feather="info" class="me-2"></i>
+                            {{ quiz.description }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Quiz Instructions -->
+                    <div class="alert alert-warning mb-4">
+                        <h6 class="alert-heading">
+                            <i data-feather="alert-triangle" class="me-2"></i>Instructions
+                        </h6>
+                        <ul class="mb-0">
+                            <li>Read each question carefully</li>
+                            <li>Select the best answer for each question</li>
+                            <li>You can review your answers before submitting</li>
+                            <li>Click "Submit Quiz" when you're ready</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Quiz Form -->
+                    <form method="post" action="{% url 'submit_quiz' quiz.id %}" id="quizForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="time_taken" id="timeTaken" value="0">
+                        
+                        <!-- Progress Bar -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">Question Progress</small>
+                                <small class="text-muted" id="progressText">0 of {{ questions.count }} answered</small>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success" id="quizProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Questions -->
+                        {% for question in questions %}
+                        <div class="question-card mb-4" data-question="{{ question.id }}">
+                            <div class="card border">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0">
+                                        <span class="badge bg-primary me-2">{{ forloop.counter }}</span>
+                                        {{ question.question_text }}
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" 
+                                                       name="question_{{ question.id }}" 
+                                                       value="A" 
+                                                       id="q{{ question.id }}_a"
+                                                       onchange="updateProgress()">
+                                                <label class="form-check-label" for="q{{ question.id }}_a">
+                                                    <strong>A)</strong> {{ question.option_a }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" 
+                                                       name="question_{{ question.id }}" 
+                                                       value="B" 
+                                                       id="q{{ question.id }}_b"
+                                                       onchange="updateProgress()">
+                                                <label class="form-check-label" for="q{{ question.id }}_b">
+                                                    <strong>B)</strong> {{ question.option_b }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" 
+                                                       name="question_{{ question.id }}" 
+                                                       value="C" 
+                                                       id="q{{ question.id }}_c"
+                                                       onchange="updateProgress()">
+                                                <label class="form-check-label" for="q{{ question.id }}_c">
+                                                    <strong>C)</strong> {{ question.option_c }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" 
+                                                       name="question_{{ question.id }}" 
+                                                       value="D" 
+                                                       id="q{{ question.id }}_d"
+                                                       onchange="updateProgress()">
+                                                <label class="form-check-label" for="q{{ question.id }}_d">
+                                                    <strong>D)</strong> {{ question.option_d }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+                                <i data-feather="send" class="me-2"></i>Submit Quiz
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quiz Stats -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i data-feather="bar-chart-2" class="me-2"></i>Quiz Statistics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="stat-item">
+                                <div class="h4 text-primary">{{ questions.count }}</div>
+                                <small class="text-muted">Questions</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-item">
+                                <div class="h4 text-success">{{ best_score|floatformat:0 }}%</div>
+                                <small class="text-muted">Best Score</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Previous Attempts -->
+            {% if previous_attempts %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i data-feather="clock" class="me-2"></i>Previous Attempts
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for attempt in previous_attempts %}
+                        <div class="list-group-item d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between">
+                                    <span class="badge {% if attempt.score >= 80 %}bg-success{% elif attempt.score >= 60 %}bg-warning{% else %}bg-danger{% endif %}">
+                                        {{ attempt.score|floatformat:0 }}%
+                                    </span>
+                                    <small class="text-muted">{{ attempt.completed_at|timesince }} ago</small>
+                                </div>
+                                <small class="text-muted">{{ attempt.correct_answers }}/{{ attempt.total_questions }} correct</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i data-feather="zap" class="me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if quiz.disaster_type.modules.exists %}
+                            <a href="{% url 'module_detail' quiz.disaster_type.modules.first.id %}" class="btn btn-outline-primary btn-sm">
+                                <i data-feather="book-open" class="me-1"></i>Review Module
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm">
+                            <i data-feather="arrow-left" class="me-1"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let startTime = Date.now();
+    let totalQuestions = {{ questions.count }};
+    
+    // Timer
+    function updateTimer() {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        document.getElementById('timeDisplay').textContent = 
+            String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+        document.getElementById('timeTaken').value = elapsed;
+    }
+    
+    setInterval(updateTimer, 1000);
+    
+    // Progress tracking
+    window.updateProgress = function() {
+        const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
+        const progress = (answeredQuestions / totalQuestions) * 100;
+        
+        document.getElementById('quizProgress').style.width = progress + '%';
+        document.getElementById('progressText').textContent = answeredQuestions + ' of ' + totalQuestions + ' answered';
+        
+        // Enable submit button when all questions are answered
+        const submitBtn = document.getElementById('submitBtn');
+        if (answeredQuestions === totalQuestions) {
+            submitBtn.disabled = false;
+            submitBtn.classList.add('pulse');
+        } else {
+            submitBtn.disabled = true;
+            submitBtn.classList.remove('pulse');
+        }
+    };
+    
+    // Form submission confirmation
+    document.getElementById('quizForm').addEventListener('submit', function(e) {
+        if (!confirm('Are you sure you want to submit your quiz? You cannot change your answers after submission.')) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .question-card {
+        transition: all 0.3s ease;
+    }
+    
+    .question-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .form-check-label {
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        transition: background-color 0.2s ease;
+    }
+    
+    .form-check-label:hover {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+    
+    .form-check-input:checked + .form-check-label {
+        background-color: rgba(13, 110, 253, 0.2);
+        font-weight: 600;
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .stat-item {
+        padding: 0.5rem 0;
+    }
+</style>
+{% endblock %}

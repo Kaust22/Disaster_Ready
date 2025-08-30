@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Contacts - Disaster Preparedness Education{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-danger text-white border-0">
+                <div class="card-body text-center py-4">
+                    <h1 class="h2 mb-3">
+                        <i data-feather="phone" class="me-2"></i>Emergency Contacts
+                    </h1>
+                    <p class="lead mb-0">Important phone numbers and contact information for emergency situations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Emergency Numbers -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-warning border-0 shadow-sm">
+                <h5 class="alert-heading">
+                    <i data-feather="alert-triangle" class="me-2"></i>National Emergency Numbers (India)
+                </h5>
+                <div class="row text-center">
+                    <div class="col-6 col-md-3 mb-2">
+                        <div class="emergency-number">
+                            <div class="h3 text-danger mb-1">112</div>
+                            <small class="text-muted">National Emergency</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                        <div class="emergency-number">
+                            <div class="h3 text-danger mb-1">101</div>
+                            <small class="text-muted">Fire Department</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                        <div class="emergency-number">
+                            <div class="h3 text-danger mb-1">100</div>
+                            <small class="text-muted">Police</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-2">
+                        <div class="emergency-number">
+                            <div class="h3 text-danger mb-1">108</div>
+                            <small class="text-muted">Medical Emergency</small>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <p class="mb-0 text-center">
+                    <strong>In case of immediate danger, call these numbers first!</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact Categories -->
+    {% for contact_type, contacts in grouped_contacts.items %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h4 class="mb-0">
+                        {% if contact_type == 'Fire Department' %}
+                            <i data-feather="flame" class="me-2 text-danger"></i>
+                        {% elif contact_type == 'Police' %}
+                            <i data-feather="shield" class="me-2 text-primary"></i>
+                        {% elif contact_type == 'Medical Emergency' %}
+                            <i data-feather="heart" class="me-2 text-success"></i>
+                        {% elif contact_type == 'Disaster Management' %}
+                            <i data-feather="alert-circle" class="me-2 text-warning"></i>
+                        {% elif contact_type == 'School Administration' %}
+                            <i data-feather="users" class="me-2 text-info"></i>
+                        {% else %}
+                            <i data-feather="phone" class="me-2 text-secondary"></i>
+                        {% endif %}
+                        {{ contact_type }}
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        {% for contact in contacts %}
+                        <div class="col-lg-6">
+                            <div class="contact-item p-4 border-bottom border-end">
+                                <div class="d-flex align-items-start">
+                                    <div class="contact-icon me-3">
+                                        <div class="bg-light rounded-circle p-2">
+                                            {% if contact.contact_type == 'fire' %}
+                                                <i data-feather="flame" class="text-danger"></i>
+                                            {% elif contact.contact_type == 'police' %}
+                                                <i data-feather="shield" class="text-primary"></i>
+                                            {% elif contact.contact_type == 'medical' %}
+                                                <i data-feather="heart" class="text-success"></i>
+                                            {% elif contact.contact_type == 'disaster' %}
+                                                <i data-feather="alert-circle" class="text-warning"></i>
+                                            {% elif contact.contact_type == 'school' %}
+                                                <i data-feather="users" class="text-info"></i>
+                                            {% else %}
+                                                <i data-feather="phone" class="text-secondary"></i>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ contact.name }}</h6>
+                                        <p class="text-muted mb-2">{{ contact.organization }}</p>
+                                        
+                                        <div class="contact-details">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <i data-feather="phone" class="me-2 text-success" style="width: 16px; height: 16px;"></i>
+                                                <strong class="phone-number">{{ contact.phone_number }}</strong>
+                                                <button class="btn btn-sm btn-outline-success ms-2" onclick="copyToClipboard('{{ contact.phone_number }}')">
+                                                    <i data-feather="copy" style="width: 14px; height: 14px;"></i>
+                                                </button>
+                                                <a href="tel:{{ contact.phone_number }}" class="btn btn-sm btn-success ms-1">
+                                                    <i data-feather="phone-call" style="width: 14px; height: 14px;"></i>
+                                                </a>
+                                            </div>
+                                            
+                                            {% if contact.email %}
+                                            <div class="d-flex align-items-center">
+                                                <i data-feather="mail" class="me-2 text-primary" style="width: 16px; height: 16px;"></i>
+                                                <a href="mailto:{{ contact.email }}" class="text-decoration-none">{{ contact.email }}</a>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i data-feather="info" class="me-2"></i>
+                No emergency contacts are currently available. Please contact your administrator.
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    
+    <!-- Important Notes -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i data-feather="alert-triangle" class="me-2"></i>Important Notes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li><strong>Save these numbers</strong> in your phone for quick access during emergencies</li>
+                        <li><strong>Stay calm</strong> when calling emergency services and provide clear information</li>
+                        <li><strong>Know your location</strong> - be able to provide your exact address or landmarks</li>
+                        <li><strong>Follow dispatcher instructions</strong> carefully</li>
+                        <li><strong>Don't hang up</strong> until the dispatcher tells you it's okay</li>
+                        <li><strong>Update your family</strong> about these contact numbers</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="row">
+        <div class="col-12 text-center">
+            <div class="btn-group" role="group">
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                    <i data-feather="arrow-left" class="me-1"></i>Back to Dashboard
+                </a>
+                <button onclick="window.print()" class="btn btn-outline-primary">
+                    <i data-feather="printer" class="me-1"></i>Print Contact List
+                </button>
+                <button onclick="downloadContacts()" class="btn btn-outline-success">
+                    <i data-feather="download" class="me-1"></i>Download as Text
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast for copy notifications -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="copyToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i data-feather="check-circle" class="text-success me-2"></i>
+            <strong class="me-auto">Copied!</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            Phone number copied to clipboard
+        </div>
+    </div>
+</div>
+
+<script>
+// Copy phone number to clipboard
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        // Show toast notification
+        const toast = new bootstrap.Toast(document.getElementById('copyToast'));
+        toast.show();
+    }).catch(function(err) {
+        console.error('Could not copy text: ', err);
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        const toast = new bootstrap.Toast(document.getElementById('copyToast'));
+        toast.show();
+    });
+}
+
+// Download contacts as text file
+function downloadContacts() {
+    let contactText = "EMERGENCY CONTACTS\n";
+    contactText += "==================\n\n";
+    contactText += "NATIONAL EMERGENCY NUMBERS (INDIA)\n";
+    contactText += "National Emergency: 112\n";
+    contactText += "Fire Department: 101\n";
+    contactText += "Police: 100\n";
+    contactText += "Medical Emergency: 108\n\n";
+    
+    {% for contact_type, contacts in grouped_contacts.items %}
+    contactText += "{{ contact_type|upper }}\n";
+    contactText += "{{ contact_type|length|ljust:contact_type|length:'-' }}\n";
+    {% for contact in contacts %}
+    contactText += "{{ contact.name }} - {{ contact.organization }}\n";
+    contactText += "Phone: {{ contact.phone_number }}\n";
+    {% if contact.email %}contactText += "Email: {{ contact.email }}\n";{% endif %}
+    contactText += "\n";
+    {% endfor %}
+    contactText += "\n";
+    {% endfor %}
+    
+    const blob = new Blob([contactText], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'emergency_contacts.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+
+// Print styles
+document.addEventListener('DOMContentLoaded', function() {
+    // Add print-specific styles
+    const printStyles = `
+        @media print {
+            .btn, .toast-container, nav, footer { display: none !important; }
+            .card { border: 1px solid #000 !important; page-break-inside: avoid; }
+            .contact-item { border: 1px solid #ccc !important; }
+            .phone-number { font-weight: bold; font-size: 1.2em; }
+        }
+    `;
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = printStyles;
+    document.head.appendChild(styleSheet);
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .emergency-number {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        background-color: rgba(255, 255, 255, 0.8);
+        margin: 0.25rem;
+    }
+    
+    .contact-item {
+        transition: background-color 0.2s ease;
+        min-height: 120px;
+    }
+    
+    .contact-item:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    .contact-icon .rounded-circle {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .phone-number {
+        font-family: 'Courier New', monospace;
+        font-size: 1.1rem;
+        color: #198754;
+    }
+    
+    .contact-details .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .col-lg-6 {
+            width: 100%;
+        }
+        
+        .contact-item {
+            border-end: none !important;
+        }
+        
+        .emergency-number {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+</style>
+{% endblock %}
